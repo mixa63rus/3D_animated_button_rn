@@ -6,109 +6,103 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {Component} from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
-  ScrollView,
   View,
   Text,
-  StatusBar,
+  TouchableWithoutFeedback,
+  Animated,
 } from 'react-native';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export default class App extends Component {
+  state = {
+    animation: new Animated.Value(0),
+  };
 
-const App: () => React$Node = () => {
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
+  handleAirhorn = () => {
+    Animated.timing(this.state.animation, {
+      toValue: 1,
+      duration: 100,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  onButtonUp = () => {
+    Animated.timing(this.state.animation, {
+      toValue: 0,
+      duration: 50,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  render() {
+    const innerStyle = {
+      borderRadius: this.state.animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [12, 16],
+      }),
+    };
+    const heightStyle = {
+      marginTop: this.state.animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-15, 0],
+      }),
+      paddingBottom: this.state.animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [15, 0],
+      }),
+    };
+    return (
+      <View style={styles.container}>
+        <TouchableWithoutFeedback
+          onPressIn={this.handleAirhorn}
+          onPressOut={this.onButtonUp}>
+          <View style={styles.button}>
+            <View style={styles.outer}>
+              <Animated.View style={[styles.height, heightStyle]}>
+                <Animated.View style={[styles.inner, innerStyle]}>
+                  <Text style={styles.white}>Airhorn</Text>
+                </Animated.View>
+              </Animated.View>
             </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
           </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
-};
+        </TouchableWithoutFeedback>
+      </View>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
+  button: {
+    height: 80,
+    width: 180,
   },
-  body: {
-    backgroundColor: Colors.white,
+  outer: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 14,
+    backgroundColor: 'rgba(0,0,0,0.65)',
   },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  height: {
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,0,0,.5)',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
+  inner: {
+    backgroundColor: 'red',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
+  white: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 20,
   },
 });
-
-export default App;
